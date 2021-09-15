@@ -26,22 +26,12 @@ resource "aws_subnet" "subnet" {
 }
 
 
-# Create nat gateway
-resource "aws_eip" "nat_eip" {
-  vpc      = true
-  tags = {
-    Name = "nat_eip"
-  }
+resource "aws_internet_gateway" "igw" {
 
-}
-
-resource "aws_nat_gateway" "nat-gw" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.subnet.*.id[0]
-  depends_on = [aws_subnet.subnet]
+  vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "gw_NAT"
+    Name = "igw"
   }
 }
 
@@ -50,12 +40,13 @@ resource "aws_route_table" "route-table" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat-gw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
   tags = {
-    Name = "route_table_internet_access"
+    Name = "route_table"
   }
 }
+
 
 resource "aws_route_table_association" "rt_ass" {
   subnet_id      = aws_subnet.subnet[0].id
