@@ -8,6 +8,7 @@ fi
 echo "Setting docker workprofile"
 cp -r ../roles/ ../dockerDistb/
 cp ../main.yml ../dockerDistb/
+sed -i -e "s+hosts: nginx+hosts: localhost+g" ../dockerDistb/main.yml
 echo "Copy completed"
 
 
