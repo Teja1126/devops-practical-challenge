@@ -2,6 +2,7 @@
 if [[ $# != 1 ]]; then
   echo "usage ./docker.sh <docker_image_name>"
   echo "ex :- ./docker.sh nginx"
+  exit 1
 fi
 
 echo "Setting docker workprofile"
