@@ -1,0 +1,18 @@
+---
+# tasks file for nginx
+- name: Installing ngix services
+  yum: 
+    name: nginx
+    state: latest
+
+- name: copy Deployemnt files to web directory
+  copy:
+    src: "{{ item }}" 
+    dest: "/usr/share/nginx/html/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+      - test_html.html
+      - test_js.js
+

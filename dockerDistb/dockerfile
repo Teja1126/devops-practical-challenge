@@ -1,0 +1,16 @@
+FROM centos:7
+
+RUN yum -y update \
+    && yum install -y epel-release \
+    && yum -y install nginx \
+    && yum install -y wget \
+    && yum install -y python3 pip3 \
+    && python3 -m pip install requests \
+    && yum install ansible -y \
+    && ansible --version \
+    && yum clean all 
+
+
+COPY ../roles/ main.yml run.sh /
+
+CMD ./run.sh

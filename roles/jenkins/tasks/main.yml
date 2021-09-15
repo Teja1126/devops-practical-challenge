@@ -1,0 +1,59 @@
+---
+# tasks file for jenkins
+#
+- name: Installing Java Openjdk
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Installing wget
+  yum:
+    name: wget
+    state: present
+
+- name: Downloading Apache
+  get_url:
+    url: https://downloads.apache.org/tomcat/tomcat-9/v9.0.53/bin/apache-tomcat-9.0.53.tar.gz
+    dest: /root/apache-tomcat-9.0.53.tar.gz
+    mode: '0755'
+
+- name: untaring apache
+  shell: "tar -xzvf /root/apache-tomcat-9.0.53.tar.gz -C /root/"
+
+- name: adding lines to tomcat-users.xml
+  blockinfile:
+     path: /root/apache-tomcat-9.0.53/conf/tomcat-users.xml
+     insertbefore: "</tomcat-users>"
+     content: |
+             <role rolename="manager-gui"/>
+             <role rolename="manager-script"/>
+             <role rolename="manager-jmx"/>
+             <role rolename="manager-status"/>
+             <role rolename="admin-gui"/>
+             <role rolename="admin-script"/>
+             <role username="test" password="test" rolename="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
+
+- name: Downloading jenkins.war
+  get_url:
+    url: https://updates.jenkins-ci.org/download/war/2.311/jenkins.war
+    dest: /root/jenkins.war
+    mode: '0755'
+
+- name: copying jenkins.war files to apache
+  shell: "{{ item }}"
+  with_items:
+       - cp /root/jenkins.war /root/apache-tomcat-9.0.53/webapps/jenkins.war
+       - chown root:root /root/apache-tomcat-9.0.53/webapps/jenkins.war
+       - chmod 0755 /root/apache-tomcat-9.0.53/webapps/jenkins.war
+
+- name: running startup.sh
+  shell: sh /root/apache-tomcat-9.0.53/bin/startup.sh
+
+- name: one time password to login to jenkins
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: onetimepwd
+
+- debug: var=onetimepwd.stdout_lines 
+
+- debug:
+   msg: "Now using above otp login to jenkins install the add-ons and then create the pipline using the pipline job provided in this repo"

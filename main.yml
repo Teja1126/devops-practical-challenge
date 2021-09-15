@@ -1,0 +1,5 @@
+---
+- hosts: nginx
+  roles:
+    - nginx
+  tags: nginx

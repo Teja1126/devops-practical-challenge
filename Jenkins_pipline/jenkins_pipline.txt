@@ -1,0 +1,60 @@
+pipeline {
+	agent {
+		label 'test-server'
+	}
+	parameters {
+		string(name: 'Action', defaultValue: '', description: 'Can provide only Create or Destroy')
+		string(name: 'Deployment_name', defaultValue: '', description: 'Should be Unique for each Deployment ex :- sandbox, sandbox1... etc')
+		string(name: 'Key_file', defaultValue: '', description: 'Aws Key filename')
+	}
+	stage ('Code Checkout') {
+			steps {
+				script {
+              		try {
+						sh '''
+						   git clone https://github.com/karthikholla/devops-practical-challenge.git
+						'''
+         			} catch(err) {
+						currentBuild.result = 'FAILURE'
+						echo("Code Checkout stage failed!")
+						throw(err)
+					}
+				}
+			}
+		}
+		stage('Infra Install') {
+            steps {
+				script {
+					try {
+						sh '''
+							pwd
+							cd ./devops-practical-challenge/bin/
+							python3 -a $Action -d $Deployment_name -k $Key_file
+						'''
+					} catch(err) {
+						currentBuild.result = 'FAILURE'
+						echo("Build failed at Infra Installation stage!")
+						throw(err)
+                		sh 'exit 1'
+					}
+				}
+            }
+		}
+		stage('NGINX deployment') {
+            steps {
+				script {
+					try {
+						sh '''
+						    cd ./devops-practical-challenge/
+						    ansible-playbook main.yml -i nginx.ini -b
+						'''
+					} catch(err) {
+						currentBuild.result = 'FAILURE'
+						echo("Build failed at Nginx installation stage failed!")
+						throw(err)
+                		sh 'exit 1'
+					}
+				}
+            }
+		}
+}

@@ -1,0 +1,42 @@
+---
+# tasks file for jenkins
+#
+- name: Installing Java Openjdk
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+     - java-1.8.0-openjdk
+     - wget
+
+- name: Downloading Apache
+  get_url:
+    url: https://downloads.apache.org/tomcat/tomcat-9/v9.0.53/bin/apache-tomcat-9.0.53.tar.gz
+    dest: /root/apache-tomcat-9.0.53.tar.gz
+    mode: '0755'
+
+- name: untaring apache
+  shell: "tar -xzvf /root/apache-tomcat-9.0.53.tar.gz"
+
+- name: adding lines to tomcat-users.xml
+  blockinfile:
+     path: /etc/logrotate.d/syslog
+     insertbefore: "</tomcat-users>"
+     content: |
+             <role rolename="manager-gui"/>
+             <role rolename="manager-script"/>
+             <role rolename="manager-jmx"/>
+             <role rolename="manager-status"/>
+             <role rolename="admin-gui"/>
+             <role rolename="admin-script"/>
+             <role username="test" password="test" rolename="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
+
+- name: Downloading Apache
+  get_url:
+    url: https://updates.jenkins-ci.org/download/war/2.311/jenkins.war
+    dest: /root/jenkins.war
+    mode: '0755'
+
+- name: 
+
+
