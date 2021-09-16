@@ -26,6 +26,7 @@ if [[ $? == 0 ]]; then
   echo "Infra Deployemnt done successfully"
 else
   echo "Infra Deployemnt failed"
+  exit 1
 fi
 
 cd ../devops-practical-challenge/
@@ -38,4 +39,5 @@ if [[ $? == 0 ]]; then
   echo "NGINX Deployemnt done successfully"
 else
   echo "NGINX Deployemnt failed"
+  exit 1
 fi
