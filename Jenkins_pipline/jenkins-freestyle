@@ -22,6 +22,20 @@ echo "python3 launcher.py -a ${ACTION} -d ${DEPLOYMENT_NAME} -k ${KEY}"
 
 python3 launcher.py -a ${ACTION} -d ${DEPLOYMENT_NAME} -k ${KEY}
 
+if [[ $? == 0 ]]; then
+  echo "Infra Deployemnt done successfully"
+else
+  echo "Infra Deployemnt failed"
+fi
 
+cd ../devops-practical-challenge/
 
+echo "ansible-playbook main.yml -i nginx.ini -b"
 
+ansible-playbook main.yml -i nginx.ini -b
+
+if [[ $? == 0 ]]; then
+  echo "NGINX Deployemnt done successfully"
+else
+  echo "NGINX Deployemnt failed"
+fi
